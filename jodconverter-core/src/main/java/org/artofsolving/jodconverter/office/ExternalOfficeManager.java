@@ -32,18 +32,23 @@ import java.net.ConnectException;
  */
 class ExternalOfficeManager implements OfficeManager {
 
+	private TimeoutExecutor timeoutExecutor = new TimeoutExecutor();
 	private final OfficeConnection connection;
 	private final boolean connectOnStart;
-
+	private final long connectTimeout;
+	private final long convertTimeout;
+ 	
 	/**
 	 * @param unoUrl
 	 * @param connectOnStart
 	 *            should a connection be attempted on {@link #start()}? Default is <em>true</em>. If <em>false</em>, a connection will only be attempted the first time an
 	 *            {@link OfficeTask} is executed.
 	 */
-	public ExternalOfficeManager(UnoUrl unoUrl, boolean connectOnStart) {
+	public ExternalOfficeManager(UnoUrl unoUrl, boolean connectOnStart, long connectTimeout, long convertTimeout) {
 		connection = new OfficeConnection(unoUrl);
 		this.connectOnStart = connectOnStart;
+		this.connectTimeout = connectTimeout;
+		this.convertTimeout = convertTimeout;
 	}
 
 	public void start() throws OfficeException {
@@ -60,6 +65,7 @@ class ExternalOfficeManager implements OfficeManager {
 				connection.disconnect();
 			}
 		}
+		timeoutExecutor.shudown();
 	}
 
 	public void execute(OfficeTask task) throws OfficeException {
@@ -67,16 +73,28 @@ class ExternalOfficeManager implements OfficeManager {
 			if (!connection.isConnected()) {
 				connect();
 			}
-			task.execute(connection);
+			executeTask(task);
 		}
 	}
 
+	private void executeTask(final OfficeTask task) {
+		timeoutExecutor.executeWithTimeout(new Runnable() {
+			public void run() {
+				task.execute(connection);
+			}
+		}, convertTimeout);
+	}
+	
 	private void connect() {
-		try {
-			connection.connect();
-		} catch (ConnectException connectException) {
-			throw new OfficeException("could not connect to external office process", connectException);
-		}
+		timeoutExecutor.executeWithTimeout(new Runnable() {
+			public void run() {
+				try {
+					connection.connect();
+				} catch (ConnectException connectException) {
+					throw new OfficeException("could not connect to external office process", connectException);
+				}
+			}
+		}, connectTimeout);
 	}
 
 	public boolean isRunning() {

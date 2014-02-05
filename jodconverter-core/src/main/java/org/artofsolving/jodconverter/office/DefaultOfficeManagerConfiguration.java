@@ -35,6 +35,8 @@ public class DefaultOfficeManagerConfiguration {
     private long taskExecutionTimeout = 120000L;  // 2 minutes
     private int maxTasksPerProcess = 200;
     private long retryTimeout = DEFAULT_RETRY_TIMEOUT;
+    
+    private long delayBeforeConnect = 5000L;
 
     private ProcessManager processManager = null;  // lazily initialised
 
@@ -151,6 +153,11 @@ public class DefaultOfficeManagerConfiguration {
         this.retryTimeout = retryTimeout;
         return this;
     }
+    
+    public DefaultOfficeManagerConfiguration setDelayBeforeConnect(long delayBeforeConnect) {
+    	this.delayBeforeConnect = delayBeforeConnect;
+    	return this;
+    }
 
     public OfficeManager buildOfficeManager() throws IllegalStateException {
         if (officeHome == null) {
@@ -176,7 +183,7 @@ public class DefaultOfficeManagerConfiguration {
         for (int i = 0; i < numInstances; i++) {
             unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
         }
-        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, workDir, retryTimeout, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
+        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, workDir, retryTimeout, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, delayBeforeConnect, processManager);
     }
 
     private ProcessManager findBestProcessManager() {

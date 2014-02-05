@@ -131,7 +131,7 @@ class ManagedOfficeProcess {
 						}
 					}
 				}
-			}.execute(settings.getRetryInterval(), settings.getRetryTimeout());
+			}.execute(settings.getDelayBeforeConnect(), settings.getRetryInterval(), settings.getRetryTimeout());
 		} catch (Exception exception) {
 			throw new OfficeException("could not establish connection", exception);
 		}

@@ -29,7 +29,8 @@ class ManagedOfficeProcessSettings {
     private ProcessManager processManager = new PureJavaProcessManager();
     private long retryTimeout = DefaultOfficeManagerConfiguration.DEFAULT_RETRY_TIMEOUT;
     private long retryInterval = DEFAULT_RETRY_INTERVAL;
-
+    private long delayBeforeConnect = 5000L;
+    
     public ManagedOfficeProcessSettings(UnoUrl unoUrl) {
         this.unoUrl = unoUrl;
     }
@@ -93,5 +94,13 @@ class ManagedOfficeProcessSettings {
     public void setRetryInterval(long retryInterval) {
         this.retryInterval = retryInterval;
     }
+    
+    public long getDelayBeforeConnect() {
+		return delayBeforeConnect;
+	}
+    
+    public void setDelayBeforeConnect(long delayBeforeConnect) {
+		this.delayBeforeConnect = delayBeforeConnect;
+	}
 
 }

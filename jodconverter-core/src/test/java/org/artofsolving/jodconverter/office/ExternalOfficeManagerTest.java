@@ -35,7 +35,7 @@ public class ExternalOfficeManagerTest {
             Thread.sleep(2000);
         }
         
-        ExternalOfficeManager manager = new ExternalOfficeManager(unoUrl, true);
+        ExternalOfficeManager manager = new ExternalOfficeManager(unoUrl, true, 5000, 5000);
         manager.start();
         
         MockOfficeTask task = new MockOfficeTask();

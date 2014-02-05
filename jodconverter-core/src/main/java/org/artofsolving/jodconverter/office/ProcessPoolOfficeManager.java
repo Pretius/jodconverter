@@ -31,7 +31,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
     private final Logger logger = Logger.getLogger(ProcessPoolOfficeManager.class.getName());
 
     public ProcessPoolOfficeManager(File officeHome, UnoUrl[] unoUrls, String[] runAsArgs, File templateProfileDir, File workDir,
-            long retryTimeout, long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess,
+            long retryTimeout, long taskQueueTimeout, long taskExecutionTimeout, int maxTasksPerProcess, long delayBeforeConnect,
             ProcessManager processManager) {
 		this.taskQueueTimeout = taskQueueTimeout;
         pool = new ArrayBlockingQueue<PooledOfficeManager>(unoUrls.length);
@@ -46,6 +46,7 @@ class ProcessPoolOfficeManager implements OfficeManager {
             settings.setTaskExecutionTimeout(taskExecutionTimeout);
             settings.setMaxTasksPerProcess(maxTasksPerProcess);
             settings.setProcessManager(processManager);
+            settings.setDelayBeforeConnect(delayBeforeConnect);
             pooledManagers[i] = new PooledOfficeManager(settings);
         }
         logger.info("ProcessManager implementation is " + processManager.getClass().getSimpleName());

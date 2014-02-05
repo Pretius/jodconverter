@@ -18,6 +18,8 @@ public class ExternalOfficeManagerConfiguration {
     private int portNumber = 2002;
     private String pipeName = "office";
     private boolean connectOnStart = true;
+    private long connectTimeout = 5000;
+    private long convertTimeout = 60000;
 
     public ExternalOfficeManagerConfiguration setConnectionProtocol(OfficeConnectionProtocol connectionProtocol) {
         this.connectionProtocol = connectionProtocol;
@@ -38,10 +40,20 @@ public class ExternalOfficeManagerConfiguration {
         this.connectOnStart = connectOnStart;
         return this;
     }
+    
+	public ExternalOfficeManagerConfiguration setConnectTimeout(long connectTimeout) {
+		this.connectTimeout = connectTimeout;
+		return this;
+	}
+
+	public ExternalOfficeManagerConfiguration setConvertTimeout(long convertTimeout) {
+		this.convertTimeout = convertTimeout;
+		return this;
+	}
 
     public OfficeManager buildOfficeManager() {
         UnoUrl unoUrl = connectionProtocol == OfficeConnectionProtocol.SOCKET ? UnoUrl.socket(portNumber) : UnoUrl.pipe(pipeName);
-        return new ExternalOfficeManager(unoUrl, connectOnStart);
+        return new ExternalOfficeManager(unoUrl, connectOnStart, connectTimeout, convertTimeout);
     }
 
 }
